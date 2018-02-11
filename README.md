@@ -27,12 +27,16 @@ application name必须全小写，context-path需要与application name相同，
 
 
 ## 配置和启动ngineureka
+先前往releases页面下载ngineureka.zip：[https://github.com/codingmiao/ngineureka/releases][2]
 
-[windows下配置和启动][2]
+然后进行配置和启动:
 
-[linux下配置和启动][2]
+[windows下配置和启动][3]
+
+[linux下配置和启动][4]
 
 
   [1]: http://7xlvcv.com1.z0.glb.clouddn.com/01bbc543-059f-4f2a-8364-dd95a7505deb
-  [2]: https://github.com/codingmiao/ngineureka/blob/master/wincfg.md "windows下配置和启动"
-  [3]: https://github.com/codingmiao/ngineureka/blob/master/linuxcfg.md "linux下配置和启动"
+  [2]: https://github.com/codingmiao/ngineureka/releases
+  [3]: https://github.com/codingmiao/ngineureka/blob/master/wincfg.md "windows下配置和启动"
+  [4]: https://github.com/codingmiao/ngineureka/blob/master/linuxcfg.md "linux下配置和启动"

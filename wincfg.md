@@ -13,6 +13,7 @@ heartbeatCycle=300
 
 ## 2、修改nginx.conf
 在相应的位置添加 “include {confPath}/ngineureka_upstream.conf;” “include {confPath}/ngineureka_upstream.conf;”两行，引入ngineureka启动后生成的配置
+
 一个配置的例子如下(仅演示http块):
 
 ```
