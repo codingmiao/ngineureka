@@ -1,12 +1,30 @@
 # windows下的配置和使用
+## 0、配置注册中心
+用解压缩工具打开ngineureka.jar\BOOT-INF\classes\application.yml文件，这是一个标注的spring cloud配置
+```
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.111.58.121:10000/eureka/
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  port: 10001
+  context-path: /ngineureka
+spring:
+  application:
+    name: ngineureka
+```
+请将defaultZone改为注册中心地址
 
 ## 1、修改config.properties配置信息
 一个配置的例子如下：
-eurekaUrl为您的eureka注册中心地址
-confPath指定一个文件夹，用于存放生成的nginx配置信息
-heartbeatCycle指定查询注册中心的周期(秒)
+confPath指定一个文件夹，用于存放生成的nginx配置信息；
+
+heartbeatCycle指定查询注册中心的周期(秒)；
+
+recordCacheSize是可选的，记录最近操作的次数；
 ```
-eurekaUrl=http://192.168.1.1:10000/eureka
 confPath=D:/nginx-1.8.1/conf/apps
 heartbeatCycle=300
 ```

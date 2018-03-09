@@ -35,6 +35,18 @@ application name必须全小写，context-path需要与application name相同，
 
 [linux下配置和启动][4]
 
+## RESTful API
+
+```
+<ngineurekaURL>/ngineureka/cmd/reload
+```
+立即读取当前注册中心内的服务，并强制刷新nginx(由于eureka的延迟机制，新注册的服务可能不能立即读到，如果遇到这种情况，请过几秒钟再尝试)
+
+```
+<ngineurekaURL>/ngineureka/record/lately
+```
+查询最近几次执行情况，返回一个json，包含执行状态，注册过的服务等
+
 
   [1]: http://7xlvcv.com1.z0.glb.clouddn.com/01bbc543-059f-4f2a-8364-dd95a7505deb
   [2]: https://github.com/codingmiao/ngineureka/releases
