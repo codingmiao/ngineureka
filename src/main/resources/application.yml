@@ -1,0 +1,12 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.111.58.121:10000/eureka/
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  port: 10001
+  context-path: /ngineureka
+spring:
+  application:
+    name: ngineureka
