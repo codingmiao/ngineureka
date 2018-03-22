@@ -1,7 +1,7 @@
 package org.wowtools.springcloudext.ngineureka.service;
 
-import org.jdom.Element;
 import org.springframework.stereotype.Service;
+import org.wowtools.common.utils.ResourcesReader;
 import org.wowtools.springcloudext.ngineureka.pojo.Record;
 import org.wowtools.springcloudext.ngineureka.pojo.ServiceRecord;
 import org.wowtools.springcloudext.ngineureka.util.Constant;
@@ -10,7 +10,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 操作nginx的服务
@@ -20,6 +21,38 @@ import java.util.List;
  */
 @Service
 public class NginxService {
+    /**
+     * location块中扩展的参数
+     */
+    private final HashMap<String, String> locationParams;
+
+    {
+        String path = Constant.rootPath + "locationParam.txt";
+        if (!new File(path).exists()) {
+            locationParams = new HashMap<>(0);
+        } else {
+            try {
+                String[] strs = ResourcesReader.readStr(Constant.rootPath + "locationParam.txt").split("\n");
+                HashMap<String, StringBuilder> kv = new HashMap<>();
+                StringBuilder param = null;
+                for (String str : strs) {
+                    if (str.length() > 0 && str.charAt(0) == '>') {
+                        param = new StringBuilder();
+                        String key = str.substring(1).trim().toLowerCase();
+                        kv.put(key, param);
+                    } else {
+                        param.append('\t').append(str).append('\n');
+                    }
+                }
+                locationParams = new HashMap<>(kv.size());
+                kv.forEach((k, sb) -> locationParams.put(k, sb.toString()));
+            } catch (Exception e) {
+                throw new RuntimeException("解析配置文件locationParam.txt异常", e);
+            }
+        }
+
+
+    }
 
     /**
      * 将服务信息写入nginx配置并reload
@@ -51,6 +84,10 @@ public class NginxService {
 
                 sbServer.append("location ^~ /").append(appName).append("/ {\n");
                 sbServer.append("\tproxy_pass http://upstream_").append(appName).append(";\n");
+                String param = locationParams.get(appName);
+                if (null != param) {
+                    sbServer.append(param);
+                }
                 sbServer.append("}\n\n");
                 for (String url : urls) {
                     sbUpstream.append("\tserver ").append(url).append(";\n");
