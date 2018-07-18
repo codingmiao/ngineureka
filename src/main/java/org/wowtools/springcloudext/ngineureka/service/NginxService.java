@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -32,7 +31,9 @@ public class NginxService {
             locationParams = new HashMap<>(0);
         } else {
             try {
-                String[] strs = ResourcesReader.readStr(Constant.rootPath + "locationParam.txt").split("\n");
+                String locationParam = ResourcesReader.readStr(path);
+                System.out.println("locationParam:\n" + locationParam);
+                String[] strs = locationParam.split("\n");
                 HashMap<String, StringBuilder> kv = new HashMap<>();
                 StringBuilder param = null;
                 for (String str : strs) {
@@ -120,7 +121,10 @@ public class NginxService {
     private static void reloadCfg(Record record) {
         String fileName = "/".equals(File.separator) ? "reload.sh" : "reload.bat";
         try {
-            exeCmd(Constant.rootPath + fileName);
+            String res = exeCmd(Constant.rootPath + fileName);
+            if (null != res && res.length() > 0) {
+                record.addMsg("nginx reload:" + res);
+            }
         } catch (Exception e) {
             record.setException(Record.State.ErrOnReloadNginx, e);
             throw new RuntimeException(e);
@@ -141,10 +145,10 @@ public class NginxService {
             String line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
 
-            return sb.toString();
+            return sb.toString().trim();
         } catch (Exception e) {
             throw new RuntimeException("执行控制台命令异常:" + commandStr, e);
         } finally {

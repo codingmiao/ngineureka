@@ -3,6 +3,11 @@ package org.wowtools.springcloudext.ngineureka.pojo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 运行记录，存放每次心跳的运行信息
  *
@@ -45,6 +50,8 @@ public class Record {
      */
     private State state;
 
+    private List<String> msgs;
+
     /**
      * 异常类型
      */
@@ -74,8 +81,14 @@ public class Record {
         if (null != state) {
             jo.put("exceptionType", state.type);
         }
-        if(null!=exception){
-            jo.put("exception", exception.getMessage());
+        if (null != exception) {
+            StringWriter stringWriter = new StringWriter();
+            exception.printStackTrace(new PrintWriter(stringWriter));
+            String strException = stringWriter.toString();
+            jo.put("exception", strException);
+        }
+        if (null != msgs && msgs.size() > 0) {
+            jo.put("msgs", msgs);
         }
 
         jo.put("startTimestamp", startTimestamp);
@@ -84,6 +97,13 @@ public class Record {
         jo.put("reloadStartTimestamp", reloadStartTimestamp);
         jo.put("reloadEndTimestamp", reloadEndTimestamp);
         return jo;
+    }
+
+    public void addMsg(String msg) {
+        if (null == msgs) {
+            msgs = new ArrayList<>(1);
+        }
+        msgs.add(msg);
     }
 
     public void setException(State exceptionType, Exception exception) {
@@ -146,4 +166,6 @@ public class Record {
     public void setState(State state) {
         this.state = state;
     }
+
+
 }
