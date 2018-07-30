@@ -29,7 +29,12 @@ application name必须全小写，context-path需要与application name相同，
 
 ## 配置和启动ngineureka
 下载ngineureka.zip或自行编译
-1.1版本后，由于springcloud编译出的文件较大，已放到网盘：[https://pan.baidu.com/s/1RlKr9Z8f0Tm89uMlrRZwSg][2]
+1.1版本后，由于springcloud编译出的文件较大，已放到网盘
+v1.2:
+https://pan.baidu.com/s/1USs4gBNIlx0KBMxUCD-u-A
+
+v1.1 
+https://pan.baidu.com/s/1RlKr9Z8f0Tm89uMlrRZwSg
 
 然后进行配置和启动:
 
