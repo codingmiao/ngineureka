@@ -13,15 +13,16 @@ ngineureka定期查询注册中心内可用的application，并将它们转换�
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://192.168.1.1:10000/eureka/
+      defaultZone: http://127.0.0.1:10000/eureka/
 server:
   tomcat:
     uri-encoding: UTF-8
-  port: 11000
-  context-path: /esrielevation
+  port: 10001
+  servlet:
+    context-path: /${spring.application.name}
 spring:
   application:
-    name: esrielevation
+    name: myApp
 ```
 application name必须全小写，context-path需要与application name相同，这也意味着，您application中所有的Controller，都将被加上application name前缀
 
@@ -48,8 +49,14 @@ application name必须全小写，context-path需要与application name相同，
 ```
 查询最近几次执行情况，返回一个json，包含执行状态，注册过的服务等
 
+## web图形界面
+服务启动后，访问如下地址(几分钟后，可直接使用http://localhost:<nginx的端口>/ngineureka)，即可访问web界面
+http://localhost:10001/ngineureka/
+![此处输入图片的描述][5]
+
 
   [1]: http://7xlvcv.com1.z0.glb.clouddn.com/01bbc543-059f-4f2a-8364-dd95a7505deb
   [2]: https://pan.baidu.com/s/1RlKr9Z8f0Tm89uMlrRZwSg
   [3]: https://github.com/codingmiao/ngineureka/blob/master/wincfg.md "windows下配置和启动"
   [4]: https://github.com/codingmiao/ngineureka/blob/master/linuxcfg.md "linux下配置和启动"
+  [5]: http://7xlvcv.com1.z0.glb.clouddn.com/9fffa1d7-5116-4149-911e-0656f90bca4b
