@@ -24,10 +24,10 @@ public class RecordService {
     public Record[] getLately() {
         synchronized (recordCache) {
             Record[] res = new Record[recordCache.size()];
-            int i = 0;
+            int i = res.length-1;
             for (Record record : recordCache) {
                 res[i] = record;
-                i++;
+                i--;
             }
             return res;
         }
