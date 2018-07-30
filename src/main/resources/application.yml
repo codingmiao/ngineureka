@@ -1,12 +1,17 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://10.111.58.121:10000/eureka/
+      defaultZone: http://127.0.0.1:10000/eureka/
 server:
   tomcat:
     uri-encoding: UTF-8
   port: 10001
-  context-path: /ngineureka
+  servlet:
+    context-path: /${spring.application.name}
 spring:
   application:
     name: ngineureka
+  thymeleaf:
+    prefix: classpath:/static/
+    suffix: .html
+    cache: false #开发时热部署用，正式环境时请去除

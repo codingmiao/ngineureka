@@ -1,6 +1,6 @@
 package org.wowtools.springcloudext.ngineureka.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.util.StringUtils;
 import org.wowtools.common.utils.ResourcesReader;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class Constant {
      */
     private static String getCfgOrDefault(Properties p, String key, String defaultV) {
         String v = p.getProperty(key);
-        if (StringUtils.isBlank(v)) {
+        if (StringUtils.isEmpty(v)) {
             return defaultV;
         }
         return v;
@@ -89,7 +89,7 @@ public class Constant {
      */
     private static int getCfgOrDefault(Properties p, String key, int defaultV) {
         String v = p.getProperty(key);
-        if (StringUtils.isBlank(v)) {
+        if (StringUtils.isEmpty(v)) {
             return defaultV;
         }
         return Integer.valueOf(v.trim());

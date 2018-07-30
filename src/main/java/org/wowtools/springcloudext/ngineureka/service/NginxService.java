@@ -6,10 +6,7 @@ import org.wowtools.springcloudext.ngineureka.pojo.Record;
 import org.wowtools.springcloudext.ngineureka.pojo.ServiceRecord;
 import org.wowtools.springcloudext.ngineureka.util.Constant;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 
 /**
