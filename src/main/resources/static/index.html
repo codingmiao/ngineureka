@@ -194,7 +194,7 @@
                         queryCost: info.queryEndTimestamp - info.queryStartTimestamp,//读注册中心耗时
                         reloadCost: info.reloadEndTimestamp - info.reloadStartTimestamp,//nginx reload 耗时
                         successFlag: "success" == info.exceptionType ? "success" : "warning",//成功的label
-                        servicesNum: info.services.length,//服务数
+                        servicesNum: info.services?info.services.length:0,//服务数
                         exceptionType: info.exceptionType,//成功或异常类型
                     };
                     tmplDatas.push(tmplData);
