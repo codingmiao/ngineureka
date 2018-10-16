@@ -77,11 +77,11 @@ public class NginxService {
             for (ServiceRecord service : services) {
                 String[] urls = service.getServiceUrls();
                 String appName = service.getName();
-                sbUpstream.append("upstream upstream_").append(appName).append("{\n");
+                sbUpstream.append("upstream upstream-").append(appName).append("{\n");
                 sbUpstream.append("\tleast_conn;\n");
 
                 sbServer.append("location ^~ /").append(appName).append("/ {\n");
-                sbServer.append("\tproxy_pass http://upstream_").append(appName).append(";\n");
+                sbServer.append("\tproxy_pass http://upstream-").append(appName).append(";\n");
                 String param = locationParams.get(appName);
                 if (null != param) {
                     sbServer.append(param);
