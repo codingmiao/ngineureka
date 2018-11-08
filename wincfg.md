@@ -5,7 +5,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://10.111.58.121:10000/eureka/
+      defaultZone: http://127.0.0.1:10000/eureka/
 server:
   tomcat:
     uri-encoding: UTF-8
@@ -67,29 +67,14 @@ nginx -s reload
 ```
 修改前两行，使得cmd命令能够切换到您的nginx根目录
 
-## 可选操作1、为location块添加参数(自版本1.1.1)
-有时候，我们需要对location块添加一下参数，以满足性能，安全性等需求，比如:
-```
-location ^~ /xx/ {
-	proxy_pass http://upstream_xx;
-	deny 192.168.1.2;
-	deny 192.168.1.3;
-}
-```
-此时，我们可以配置根目录下的文件locationParam.txt(没有则新建一个)
-```
->xx
-deny 192.168.1.2;
-deny 192.168.1.3;
-
->xx1
-proxy_set_header  X-Real-IP  $remote_addr;
-```
-">"开头的行表示应用名称，根据前面的约定，会被转为全小写
-下面跟着的行就是该应用对应的location块下要加的参数了
-
 ## 4、启动
 双击startup.bat启动服务
 您可以通过查看{confPath}/ngineureka_upstream.conf文件，检查配置信息是否正确地添加到nginx
+
+在浏览器访问下面的地址，手动刷新一下服务
+```
+http://127.0.0.1:10001/ngineureka/cmd/reload
+
+```
 
 然后，就能通过nginx，访问到您的rest服务了~

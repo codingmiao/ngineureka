@@ -30,6 +30,7 @@ application name必须全小写，context-path需要与application name相同，
 ## 配置和启动ngineureka
 下载ngineureka.zip或自行编译
 1.1版本后，由于springcloud编译出的文件较大，已放到网盘
+
 v1.2:
 https://pan.baidu.com/s/1USs4gBNIlx0KBMxUCD-u-A
 
@@ -41,6 +42,12 @@ https://pan.baidu.com/s/1RlKr9Z8f0Tm89uMlrRZwSg
 [windows下配置和启动][3]
 
 [linux下配置和启动][4]
+
+### 可选的配置
+
+ngineureka还提供了一些可选的配置，方便您针对某个应用进行特殊配置：
+
+[可选配置][6]
 
 ## RESTful API
 
@@ -60,8 +67,9 @@ http://localhost:10001/ngineureka/
 ![此处输入图片的描述][5]
 
 
-  [1]: http://7xlvcv.com1.z0.glb.clouddn.com/01bbc543-059f-4f2a-8364-dd95a7505deb
+  [1]: https://camo.githubusercontent.com/26621f8cb95a1f4d139e974a7e81680b994546c0/687474703a2f2f37786c7663762e636f6d312e7a302e676c622e636c6f7564646e2e636f6d2f30316262633534332d303539662d346632612d383336342d646439356137353035646562
   [2]: https://pan.baidu.com/s/1RlKr9Z8f0Tm89uMlrRZwSg
   [3]: https://github.com/codingmiao/ngineureka/blob/master/wincfg.md "windows下配置和启动"
   [4]: https://github.com/codingmiao/ngineureka/blob/master/linuxcfg.md "linux下配置和启动"
   [5]: http://7xlvcv.com1.z0.glb.clouddn.com/9fffa1d7-5116-4149-911e-0656f90bca4b
+  [6]: https://github.com/codingmiao/ngineureka/blob/master/optional.md "可选配置"
