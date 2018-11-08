@@ -8,6 +8,8 @@ import org.wowtools.springcloudext.ngineureka.util.Constant;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * 操作nginx的服务
@@ -49,6 +51,51 @@ public class NginxService {
             }
         }
 
+    }
+
+    /**
+     * 负载均衡策略
+     */
+    private final HashMap<String, String> loadBalancingStrategys;
+
+    {
+        String path = Constant.rootPath + "loadBalancingStrategy.properties";
+        if (new File(path).exists()) {
+            Properties p = new Properties();
+            try {
+                p.load(ResourcesReader.readStream(path));
+            } catch (IOException e) {
+                throw new RuntimeException("loadBalancingStrategy.properties config err", e);
+            }
+            Set<String> appNames = p.stringPropertyNames();
+            loadBalancingStrategys = new HashMap<>(appNames.size());
+            for (String appName : appNames) {
+                String value = p.getProperty(appName);
+                String strategy;
+                switch (value) {
+                    case "least_conn":
+                        strategy = "\tleast_conn;\n";
+                        break;
+                    case "ip_hash":
+                        strategy = "\tip_hash;\n";
+                        break;
+                    case "polling":
+                        strategy = "";
+                        break;
+                    case "url_hash":
+                        strategy = "\thash $request_uri;\n";
+                        break;
+                    case "fair":
+                        strategy = "\tfair;\n";
+                        break;
+                    default:
+                        strategy = "\tleast_conn;\n";
+                }
+                loadBalancingStrategys.put(appName, strategy);
+            }
+        } else {
+            loadBalancingStrategys = new HashMap<>(0);
+        }
 
     }
 
@@ -77,9 +124,14 @@ public class NginxService {
             for (ServiceRecord service : services) {
                 String[] urls = service.getServiceUrls();
                 String appName = service.getName();
+                //upstream
                 sbUpstream.append("upstream upstream-").append(appName).append("{\n");
-                sbUpstream.append("\tleast_conn;\n");
-
+                String loadBalancingStrategy = loadBalancingStrategys.get(appName);
+                if (null == loadBalancingStrategy) {
+                    loadBalancingStrategy = "\tleast_conn;\n";
+                }
+                sbUpstream.append(loadBalancingStrategy);
+                //location
                 sbServer.append("location ^~ /").append(appName).append("/ {\n");
                 sbServer.append("\tproxy_pass http://upstream-").append(appName).append(";\n");
                 String param = locationParams.get(appName);
