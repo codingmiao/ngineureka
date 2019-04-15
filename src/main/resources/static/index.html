@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ngineureka-最近执行状态</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- bootstrap -->
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet"/>
+    <link href="css/bootstrap/bootstrap-responsive.css" rel="stylesheet"/>
+    <link href="css/bootstrap/bootstrap-overrides.css" type="text/css" rel="stylesheet"/>
+
+    <!-- global styles -->
+    <link rel="stylesheet" type="text/css" href="css/layout.css"/>
+    <link rel="stylesheet" type="text/css" href="css/elements.css"/>
+    <link rel="stylesheet" type="text/css" href="css/icons.css"/>
+
+    <!-- libraries -->
+    <link href="css/lib/font-awesome.css" type="text/css" rel="stylesheet"/>
+
+    <!-- this page specific styles -->
+    <link rel="stylesheet" href="css/compiled/tables.css" type="text/css" media="screen"/>
+
+    <![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+
+<!-- main container -->
+<!-- products table-->
+<!-- the script for the toggle all checkboxes from header is located in js/theme.js -->
+<div class="table-wrapper products-table section">
+    <div class="row-fluid head">
+        <div class="col-lg-3 pull-left">
+            <h4>最近几次执行扫描记录</h4>
+        </div>
+        <div class="col-lg-1 pull-left">
+            &nbsp;&nbsp;
+        </div>
+        <div class="col-lg-3 pull-left">
+            <button class="btn btn-primary btn-lg" onclick="refresh()">刷新
+            </button>
+        </div>
+        <div class="col-lg-3 pull-left">
+            <h5 id="msg"></h5>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>
+                    <!--  class="span3" -->
+                    <span class="line"></span>开始时间
+                </th>
+                <th>
+                    <span class="line"></span>读注册中心耗时(ms)
+                </th>
+                <th>
+                    <span class="line"></span>reload nginx耗时(ms)
+                </th>
+                <th>
+                    <span class="line"></span>状态
+                </th>
+                <th>
+                    <span class="line"></span>服务数
+                </th>
+                <th>
+                    <span class="line"></span>详情
+                </th>
+            </tr>
+            </thead>
+            <tbody id="latelyList">
+            <!-- row -->
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div><a href="https://github.com/codingmiao/ngineureka" target="_blank">about ngineureka</a></div>
+<!-- end products table -->
+
+<!-- end main container -->
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">详情</h4>
+            </div>
+            <div class="modal-body" id="detailsBody">
+                <h5>注册服务</h5>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>
+                            <span class="line"></span>服务名称
+                        </th>
+                        <th class="span4">
+                            <span class="line"></span>可用节点
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody id="serviceList">
+                    <!-- row -->
+
+                    </tbody>
+                </table>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+<!-- scripts -->
+<script src="js/jquery-latest.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/jquery.tmpl.min.js"></script>
+
+<!-- 最后几次执行状态表格的模板 -->
+<script type="text/html" id="latelyListTmpl">
+    <tr class="first">
+        <td>${startTime}</td>
+        <td>${queryCost}</td>
+        <td>${reloadCost}</td>
+        <td><span class="label label-${successFlag}">${exceptionType}</span></td>
+        <td>${servicesNum}</td>
+        <td>
+            <ul class="actions">
+                <button class="btn btn-primary btn-lg" onclick="showDetails(${idx})">详情
+                </button>
+            </ul>
+        </td>
+    </tr>
+</script>
+
+<!-- 服务列表模板 -->
+<script type="text/html" id="serviceListTmpl">
+    <tr class="first">
+        <td>${name}</td>
+        <td>${urls}</td>
+    </tr>
+</script>
+
+<script>
+
+    Date.prototype.format = function (format) {
+        var date = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3),
+            "S+": this.getMilliseconds()
+        };
+        if (/(y+)/i.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        for (var k in date) {
+            if (new RegExp("(" + k + ")").test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ?
+                    date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+            }
+        }
+        return format;
+    };
+
+
+    var currentData;//当前的lately请求获取到的数据
+
+    /**
+     * 显示/刷新lately列表
+     */
+    function listLately(cb) {
+        $.ajax({
+            type: "GET",
+            url: "/ngineureka/record/lately",
+            dataType: "json",
+            success: function (data) {
+                $('#latelyList').empty();
+                var tmplDatas = [];
+
+                for (var i in data) {
+                    var info = data[i];
+                    var tmplData = {
+                        idx: i,//序号
+                        startTime: new Date(info.startTimestamp).format('yyyy-MM-dd hh:mm:ss'),//开始时间
+                        queryCost: info.queryEndTimestamp - info.queryStartTimestamp,//读注册中心耗时
+                        reloadCost: info.reloadEndTimestamp - info.reloadStartTimestamp,//nginx reload 耗时
+                        successFlag: "success" == info.exceptionType ? "success" : "warning",//成功的label
+                        servicesNum: info.services?info.services.length:0,//服务数
+                        exceptionType: info.exceptionType,//成功或异常类型
+                    };
+                    tmplDatas.push(tmplData);
+                    if (cb) {
+                        cb(true);
+                    }
+                }
+
+                $('#latelyListTmpl').tmpl(tmplDatas).appendTo('#latelyList');
+                currentData = data;
+            },
+            error: function (event) {
+                if (cb) {
+                    cb(false, event);
+                }
+            }
+        });
+    }
+
+    /**
+     * 显示一条数据的详情
+     */
+    function showDetails(idx) {
+        $('#serviceList').empty();
+        $('#detailsModal').modal('show');
+        var data = currentData[idx];
+        var services = data.services;
+        if (!services) {
+            return;
+        }
+        var tmplDatas = [];
+        for (var i in services) {
+            var service = services[i];
+            var tmplData = {
+                name: service.name,
+                urls: service.serviceUrls.join("\t")
+            };
+            tmplDatas.push(tmplData);
+        }
+
+        $('#serviceListTmpl').tmpl(tmplDatas).appendTo('#serviceList');
+    }
+
+    /**
+     * 刷新
+     */
+    function refresh() {
+        function cb(isSuccess, msg) {
+            var text;
+            if (isSuccess) {
+                text = "刷新成功"
+            } else {
+                text = "执行失败,msg:" + msg.responseText
+            }
+            text += "\t" + new Date().format('yyyy-MM-dd hh:mm:ss:SSS');
+            document.getElementById("msg").innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;" + text;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/ngineureka/cmd/reload",
+            dataType: "text",
+            success: function (data) {
+                if ("success" == data) {
+                    listLately(cb);
+                } else {
+                    cb(false, {responseText: data})
+                }
+            },
+            error: function (event) {
+                if (cb) {
+                    cb(false, event);
+                }
+            }
+        });
+
+    }
+
+    listLately();
+
+
+</script>
+
+</body>
+</html>
